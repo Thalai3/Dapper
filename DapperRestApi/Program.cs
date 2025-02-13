@@ -1,7 +1,12 @@
 using DapperRestApi.Service;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Host.UseSerilog((context, services, configuration) => configuration
+    .WriteTo.Console()
+    .WriteTo.File("Logs/log-.txt", rollingInterval: RollingInterval.Day)
+    .ReadFrom.Configuration(context.Configuration));
 // Add services to the container.
 builder.Services.AddTransient<IDapperService,DapperService>();  
 

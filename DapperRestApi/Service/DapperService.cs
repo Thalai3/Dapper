@@ -10,10 +10,12 @@ namespace DapperRestApi.Service
     {
         private readonly IConfiguration _configuration;
         private readonly string _connectionstring;
-        public DapperService(IConfiguration configuration)
+        private readonly ILogger _logger;
+        public DapperService(IConfiguration configuration,ILogger<DapperService> logger)
         {
             _configuration = configuration;
             _connectionstring = _configuration.GetConnectionString("falut");
+            _logger = logger;
         }
         //IDbConnection connection => new SqlConnection();
 
@@ -35,12 +37,14 @@ namespace DapperRestApi.Service
                 {
                     dbCon.Open();
                     string Query = "Insert Into tbl_Employee Values(@Name,@Age);";
-                    dbCon.Execute(Query);
+                    _logger.LogInformation("Query", Query);
+                    dbCon.ExecuteScalar(Query);
                 }
                 return new ResponseDto(true, "Record Add Successfully");
             }
             catch (Exception ex)
-             {
+            {
+                _logger.LogError("Exception in Create {0}", ex);
                 return new ResponseDto(false, ex.Message);
             }
         }
